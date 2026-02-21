@@ -84,15 +84,19 @@ Returns 401 Unautorized if User was deleted
 
 ### Log out an Account
 
+> [!DANGER]
+> Requires Correction
+
 This endpoint will let the user log out his account
 
+**Endpoint:** `/logout`
 Header: **session-id** : e1e13e1dsfat3t2ge
 **Type:** Patch
 **Parameters: **
 
 | Type | Object |
 | ---- | ------ |
-| UUID | id     |
+| UUID | userId |
 
 ```javascript
 Header:
@@ -111,17 +115,46 @@ Returns 404 if Session not found
 
 ## Not Implemented Yet
 
+### Delete an Account
+
+This endpoint will let the user log out his account
+
+**Endpoint:** `/delete`
+Header: **session-id** : e1e13e1dsfat3t2ge
+**Type:** Patch
+**Parameters: **
+
+| Type   | Object   |
+| ------ | -------- |
+| UUID   | userId   |
+| String | password |
+
+```javascript
+Header:
+session-id : dafd23eaf
+
+body:
+{
+ "id" : "fafsafaj22842",
+ "password" : "juancho2132",
+}
+```
+
+Returns 200 if deleted
+Returns 404 if Session not found
+
 ### Get Chats
 
 This endpoint will return you the chats use for the user.
 
-**Type:** GET
+**Endpoint:** `/getcurrentchats`
+**Type:** POST
 **Parameters: **
+**Headers:** session-id
 
 | Type   | Object | Lenght  |
 | ------ | ------ | ------- |
-| String | Token  | unknown |
-| String | UserId | unknown |
+| String | userId | unknown |
 
 This will return a List will the chats that the user is using
 
@@ -143,17 +176,20 @@ This will return a List will the chats that the user is using
 ];
 ```
 
+if everything good returns 200 and the objects
+if SessionId or userId are bad returns 401
+
 ### Get Chat Messages
 
 This endpoint will return you the messages of a specific chat
 
-**Type:** GET
+**Type:** POST
 **Parameters: **
+**Headers:** session-id
 
 | Type   | Object | Lenght  |
 | ------ | ------ | ------- |
-| String | Token  | unknown |
-| String | ChatId | unknown |
+| String | userId | unknown |
 
 This endpoint should return if everything ok a status 200 and JSON object
 
@@ -170,12 +206,13 @@ This endpoint should return if everything ok a status 200 and JSON object
 
 This endpoint will return you the messages of a specific chat
 
-**Type:** GET
+**Endpoint:** `/getsuggestionschats`
+**Type:** POST
 **Parameters: **
+**Headers:** session-id
 
 | Type   | Object | Lenght  |
 | ------ | ------ | ------- |
-| String | Token  | unknown |
 | String | userId | unknown |
 
 This endpoint should return if everything ok a status 200 and a JSON object
