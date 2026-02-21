@@ -18,6 +18,8 @@ import backend.model.entity.User;
 import backend.model.repository.SessionRepository;
 import backend.model.repository.UserRepository;
 import backend.model.service.UserService;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -63,32 +65,130 @@ public class UserController {
   }
 
   @PatchMapping("/logout")
-  public ResponseEntity<String> logout(@RequestHeader("session-id") UUID sessionId, @RequestBody User user) {
-
-    var sessionOptional = userService.findSession(sessionId, user.getId());
-    if (sessionOptional.isPresent()) {
-      Session session = sessionOptional.get();
-      session.setExpired(true);
-      userService.expiredSession(session);
-      return ResponseEntity.ok().build();
+  public ResponseEntity<String> logout(@RequestHeader("session-id") String sessionId, @RequestBody String user_id) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(user_id);
+      if (userService.expiredSession(UUID.fromString(jsonNode.get("user_id").asString()),
+          UUID.fromString(sessionId))) {
+        return ResponseEntity.ok().build();
+      }
+      return ResponseEntity.status(404).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
     }
-    return ResponseEntity.status(404).build();
   }
 
-  @PutMapping("/update")
-  public ResponseEntity<String> update(@RequestHeader("session-id") UUID sessionId, @RequestBody User user) {
+  @PatchMapping("/delete")
+  public ResponseEntity<String> delete(@RequestHeader("session-id") String sessionId, @RequestBody String user_id) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(user_id);
 
-    var sessionOptional = userService.findSession(sessionId, user.getId());
-    if (sessionOptional.isPresent()) {
-      Session session = sessionOptional.get();
-      User oldUser = session.getUser();
-      if (session.isExpired()) {
-        return ResponseEntity.status(401).build();
+      if (userService.deleteUser(UUID.fromString(jsonNode.get("user_id").asString()), UUID.fromString(sessionId))) {
+        return ResponseEntity.ok().build();
+      } else {
+        return ResponseEntity.status(404).build();
       }
-      userService.UpdateUser(oldUser, user);
-      return ResponseEntity.status(201).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
     }
-    return ResponseEntity.status(404).build();
+  }
+
+  @PatchMapping("/updatepassword")
+  public ResponseEntity<String> updatePassword(@RequestHeader("session-id") String sessionId,
+      @RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      switch (userService.updateUserPassword(UUID.fromString(jsonNode.get("user_id").asString()),
+          UUID.fromString(sessionId), jsonNode.get("new_password").asString(),
+          jsonNode.get("old_password").asString())) {
+        case 0:
+          return ResponseEntity.status(404).build();
+        case 1:
+          return ResponseEntity.status(201).build();
+        case 2:
+          return ResponseEntity.status(401).build();
+        case 3:
+          return ResponseEntity.status(409).build();
+        default:
+          return ResponseEntity.status(500).build();
+      }
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
+    }
+  }
+
+  @PatchMapping("/updateusername")
+  public ResponseEntity<String> updateUsername(@RequestHeader("session-id") String sessionId,
+      @RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      switch (userService.updateUserUsername(UUID.fromString(jsonNode.get("user_id").asString()),
+          UUID.fromString(sessionId), jsonNode.get("username").asString())) {
+        case 0:
+          return ResponseEntity.status(404).build();
+        case 1:
+          return ResponseEntity.status(201).build();
+        case 2:
+          return ResponseEntity.status(401).build();
+        case 3:
+          return ResponseEntity.status(409).build();
+        default:
+          return ResponseEntity.status(500).build();
+      }
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
+    }
+  }
+
+  @PostMapping("/getuser")
+  public ResponseEntity<User> updatedInfo(@RequestHeader("session-id") String sessionId, @RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      var userOptional = userService.getUser(UUID.fromString(sessionId),
+          UUID.fromString(jsonNode.get("user_id").asString()));
+      if (userOptional.isPresent()) {
+        return ResponseEntity.status(200).body(userOptional.get());
+      }
+      return ResponseEntity.status(404).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
+    }
+
+  }
+
+  @PutMapping("/updateinformation")
+  public ResponseEntity<User> updateInformation(@RequestHeader("session-id") String sessionId,
+      @RequestBody String body) {
+
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      switch (userService.updateUserInformation(UUID.fromString(jsonNode.get("user_id").asString()),
+          UUID.fromString(sessionId), jsonNode.get("city").asString(), jsonNode.get("country").asString())) {
+        case 0:
+          return ResponseEntity.status(404).build();
+        case 1:
+          return ResponseEntity.status(201).build();
+        case 2:
+          return ResponseEntity.status(401).build();
+        case 3:
+          return ResponseEntity.status(409).build();
+        default:
+          return ResponseEntity.status(500).build();
+      }
+
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
+    }
   }
 
 }

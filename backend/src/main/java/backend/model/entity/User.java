@@ -88,6 +88,10 @@ public class User {
     this.password = password;
   }
 
+  public User(UUID id) {
+    this.id = id;
+  }
+
   public UUID getId() {
     return id;
   }

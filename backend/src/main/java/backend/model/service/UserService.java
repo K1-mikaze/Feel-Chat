@@ -44,8 +44,28 @@ public class UserService {
     return userRepository.existsByUsername(username);
   }
 
-  public Session expiredSession(Session session) {
-    return sessionRepository.save(session);
+  public boolean expiredSession(UUID userId, UUID sessionId) {
+    Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
+
+    if (sessionOptional.isPresent()) {
+      Session session = sessionOptional.get();
+      session.setExpired(true);
+      sessionRepository.save(session);
+      return true;
+    }
+    return false;
+  }
+
+  public boolean deleteUser(UUID userId, UUID sessionId) {
+    Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
+    if (sessionOptional.isPresent()) {
+      Session session = sessionOptional.get();
+      User user = session.getUser();
+      user.setDeleted(true);
+      userRepository.save(user);
+      return true;
+    }
+    return false;
   }
 
   public Optional<Session> findUser(String email, String rawPassword) {
@@ -68,20 +88,72 @@ public class UserService {
     return sessionRepository.findByIdAndUserId(sessionId, userId);
   }
 
-  public User UpdateUser(User OldUser, User newUser) {
-    if (!OldUser.getPassword().equals(newUser.getPassword())) {
-      OldUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-    }
-    if (!OldUser.getUsername().equalsIgnoreCase(newUser.getUsername())) {
-      String newUsername = newUser.getUsername();
-      if (!userRepository.existsByUsername(newUsername)) {
-        OldUser.setUsername(newUsername);
+  public int updateUserInformation(UUID sessionId, UUID userId, String city,
+      String country) {
+    Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
+    if (sessionOptional.isPresent()) {
+      Session session = sessionOptional.get();
+      if (!session.isExpired()) {
+        User user = session.getUser();
+        user.setCountry(country);
+        user.setCity(city);
+        userRepository.save(user);
+        return 1;
+      } else {
+        return 2;
       }
     }
-    OldUser.setDeleted(newUser.isDeleted());
-    OldUser.setCountry(newUser.getCountry());
-    OldUser.setCity(newUser.getCity());
-
-    return userRepository.save(OldUser);
+    return 0;
   }
+
+  public int updateUserPassword(UUID userId, UUID sessionId, String newPassword, String oldPassword) {
+    Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
+    if (sessionOptional.isPresent()) {
+      Session session = sessionOptional.get();
+      if (!session.isExpired()) {
+        User user = session.getUser();
+        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+          user.setPassword(passwordEncoder.encode(newPassword));
+          userRepository.save(user);
+          return 1;
+        } else {
+          return 3;
+        }
+      } else {
+        return 2;
+      }
+    }
+    return 0;
+  }
+
+  public int updateUserUsername(UUID userId, UUID sessionId, String username) {
+    Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
+    if (sessionOptional.isPresent()) {
+      Session session = sessionOptional.get();
+      if (!session.isExpired()) {
+        User user = session.getUser();
+        if (!usernameAlreadyExists(username)) {
+          user.setUsername(username);
+          userRepository.save(user);
+          return 1;
+        } else {
+          return 3;
+        }
+      } else {
+        return 2;
+      }
+    }
+    return 0;
+  }
+
+  public Optional<User> getUser(UUID sessionId, UUID userId) {
+    Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
+    Optional<User> userOptional = Optional.empty();
+    if (sessionOptional.isPresent()) {
+      userOptional = Optional.of(sessionOptional.get().getUser());
+
+    }
+    return userOptional;
+  }
+
 }
