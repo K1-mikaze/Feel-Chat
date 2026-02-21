@@ -115,7 +115,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  // TODO: Implement navigation to CreateAccountScreen
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.signinScreen,
+                  );
                 },
                 child: const Text("You don't have an account?"),
               ),

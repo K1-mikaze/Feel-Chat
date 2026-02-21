@@ -64,7 +64,7 @@
         program = let
           script = pkgs.writeShellScriptBin "start-backend" ''
             if [[ $(basename "$PWD") == "backend" ]]; then
-              export JAVA_HOME = "${pkgs.openjdk25.home}";
+              export JAVA_HOME="${pkgs.openjdk25.home}";
               ${pkgs.maven}/bin/mvn spring-boot:run
             else
               echo "> You're not in the required folder 'backend/' "

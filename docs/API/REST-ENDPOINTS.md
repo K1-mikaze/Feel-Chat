@@ -48,16 +48,15 @@ Header: **session-id** : e1e13e1dsfat3t2ge
 
 This endpoints is use for updating users information
 
-**Endpoint:** `/updatepassword`
+**Endpoint:** `/updateusername`
 **Type:** PATCH
 **Parameters:**
 Header: **session-id** : e1e13e1dsfat3t2ge
 
-| Type   | Object       | Lenght          |
-| ------ | ------------ | --------------- |
-| String | id           | => 7 and <= 320 |
-| String | new_password | => 6            |
-| String | old_password | => 6            |
+| Type   | Object   | Lenght          |
+| ------ | -------- | --------------- |
+| String | id       | => 7 and <= 320 |
+| String | username | => 6            |
 
 - Returns 201 if everything Ok and something was updated
 - Returns 401 if session is Expired
@@ -65,20 +64,18 @@ Header: **session-id** : e1e13e1dsfat3t2ge
 - Returns 409 if oldPassword doesn't match
 - Returns 400 if bad Request
 
-### Update User Information
+### User Information
 
 This endpoints is use for updating users information
 
 **Endpoint:** `/getuser`
-**Type:** PUT
+**Type:** POST
 **Parameters:**
 Header: **session-id** : e1e13e1dsfat3t2ge
 
 | Type   | Object  | Lenght          |
 | ------ | ------- | --------------- |
 | String | user_id | => 7 and <= 320 |
-| String | country | > 5 and < 60    |
-| String | city    | > 3 and < 100   |
 
 - Returns 200 if ok
 - Returns 404 if User and Session not found
@@ -147,9 +144,9 @@ Header: **session-id** : e1e13e1dsfat3t2ge
 **Type:** Patch
 **Parameters: **
 
-| Type | Object |
-| ---- | ------ |
-| UUID | userId |
+| Type | Object  |
+| ---- | ------- |
+| UUID | user_id |
 
 ```javascript
 Header:
@@ -205,9 +202,9 @@ This endpoint will return you the chats use for the user.
 **Parameters: **
 **Headers:** session-id
 
-| Type   | Object | Lenght  |
-| ------ | ------ | ------- |
-| String | userId | unknown |
+| Type   | Object  | Lenght  |
+| ------ | ------- | ------- |
+| String | user_id | unknown |
 
 This will return a List will the chats that the user is using
 

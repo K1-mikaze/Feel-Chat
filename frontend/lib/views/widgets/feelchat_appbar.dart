@@ -14,9 +14,7 @@ AppBar FeelChatAppBar(BuildContext context) {
       PopupMenuButton<String>(
         iconColor: Colors.white,
         onSelected: (value) {
-          if (value == 'settings') {
-            // TODO: Navigate to settings
-          } else if (value == 'logout') {
+           if (value == 'logout') {
             _showLogoutDialog(context);
           } else if (value == 'account') {
             Navigator.pushNamed(context, AppRoutes.accountScreen);
@@ -24,7 +22,6 @@ AppBar FeelChatAppBar(BuildContext context) {
         },
         itemBuilder: (context) => const [
           PopupMenuItem(value: 'account', child: Text('Account')),
-          PopupMenuItem(value: 'settings', child: Text('Settings')),
           PopupMenuItem(value: 'logout', child: Text('Log Out')),
         ],
       ),

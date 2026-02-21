@@ -24,7 +24,7 @@ public class Verification {
   @Column(name = "code", nullable = false)
   private Long code;
 
-  @Column(name = "created_at", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '15 minutes'")
+  @Column(name = "created_at", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '5 minutes'")
   private LocalDateTime expire_at;
 
 }

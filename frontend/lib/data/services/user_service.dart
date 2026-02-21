@@ -51,7 +51,7 @@ class UserService {
     final response = await _client.post(
       Uri.parse('$baseUrl/getsuggestionschats'),
       headers: {'Content-Type': 'application/json', 'session-id': sessionId},
-      body: jsonEncode({'userId': userId}),
+      body: jsonEncode({'user_id': userId}),
     );
 
     if (response.statusCode == 200) {
@@ -64,7 +64,7 @@ class UserService {
     final response = await _client.patch(
       Uri.parse('$baseUrl/logout'),
       headers: {'Content-Type': 'application/json', 'session-id': sessionId},
-      body: jsonEncode({'userId': userId}),
+      body: jsonEncode({'user_id': userId}),
     );
 
     if (response.statusCode == 200) {
@@ -73,5 +73,100 @@ class UserService {
       return true;
     }
     return false;
+  }
+
+  Future<bool> updateInformation({
+    required String sessionId,
+    required String userId,
+    required String country,
+    required String city,
+  }) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/updateinformation'),
+      headers: {'Content-Type': 'application/json', 'session-id': sessionId},
+      body: jsonEncode({'user_id': userId, 'country': country, 'city': city}),
+    );
+
+    return response.statusCode == 201;
+  }
+
+  Future<bool> getUser(String sessionId, String userId) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/getuser'),
+      headers: {'Content-Type': 'application/json', 'session-id': sessionId},
+      body: jsonEncode({'user_id': userId}),
+    );
+
+    if (response.statusCode == 200) {
+      final userData = jsonDecode(response.body) as Map<String, dynamic>;
+      for (final entry in userData.entries) {
+        await _secureStorage.write(entry.key, entry.value.toString());
+      }
+      return true;
+    }
+    return false;
+  }
+
+  Future<int> updateUsername({
+    required String sessionId,
+    required String userId,
+    required String newUsername,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/updateusername'),
+      headers: {'Content-Type': 'application/json', 'session-id': sessionId},
+      body: jsonEncode({'user_id': userId, 'username': newUsername}),
+    );
+
+    if (response.statusCode == 201) return 1;
+    if (response.statusCode == 404) return 0;
+    if (response.statusCode == 409) return 2;
+    if (response.statusCode == 401) return 3;
+    return 4;
+  }
+
+  Future<int> updatePassword({
+    required String sessionId,
+    required String userId,
+    required String newPassword,
+    required String oldPassword,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/updatepassword'),
+      headers: {'Content-Type': 'application/json', 'session-id': sessionId},
+      body: jsonEncode({
+        'user_id': userId,
+        'new_password': newPassword,
+        'old_password': oldPassword,
+      }),
+    );
+
+    if (response.statusCode == 201) return 1;
+    if (response.statusCode == 404) return 0;
+    if (response.statusCode == 409) return 2;
+    if (response.statusCode == 401) return 3;
+    return 4;
+  }
+
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    required String username,
+    required String country,
+    required String city,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/save'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+        'username': username,
+        'country': country,
+        'city': city,
+      }),
+    );
+
+    return response.statusCode == 201;
   }
 }
