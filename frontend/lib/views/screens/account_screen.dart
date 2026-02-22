@@ -171,6 +171,7 @@ class _AccountScreenState extends State<AccountScreen> {
     });
 
     if (success) {
+      await _userService.getUser(sessionId, userId);
       await _loadCountry();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -459,6 +460,50 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
+  void _showDeleteAccountDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Are you sure?'),
+        content: const Text('This action can\'t be undone'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _handleDeleteAccount();
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleDeleteAccount() async {
+    final secureStorage = SecureStorageService();
+    final sessionId = await secureStorage.read('session-id');
+    final userId = await secureStorage.read('id');
+
+    if (sessionId == null || userId == null) return;
+
+    final success = await _userService.delete(
+      sessionId: sessionId,
+      userId: userId,
+    );
+
+    if (success) {
+      await secureStorage.delete('session-id');
+      await secureStorage.delete('id');
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) {
@@ -540,9 +585,7 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () {
-                // TODO: Implement delete account
-              },
+              onPressed: _showDeleteAccountDialog,
               child: const Text(
                 'Delete Account',
                 style: TextStyle(color: Colors.white),

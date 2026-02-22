@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -44,11 +45,13 @@ public class User {
   @Column(name = "verified", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
   private boolean verified = false;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private Set<Session> sessions = new HashSet<>();
 
+  @JsonIgnore
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-  private Set<Session> verifications = new HashSet<>();
+  private Set<Verification> verifications = new HashSet<>();
 
   public User() {
   }
@@ -157,6 +160,7 @@ public class User {
   }
 
   // return false if any variable of the object is empty
+  @JsonIgnore
   public boolean isEmpty() {
     return email.trim().isEmpty() &&
         password.trim().isEmpty() &&
@@ -165,6 +169,7 @@ public class User {
         country.trim().isEmpty();
   }
 
+  @JsonIgnore
   public boolean isLoginCredentialsEmpty() {
     return email.trim().isEmpty() && password.trim().isEmpty();
   }
@@ -190,14 +195,6 @@ public class User {
 
   public void setSessions(Set<Session> sessions) {
     this.sessions = sessions;
-  }
-
-  public Set<Session> getVerifications() {
-    return verifications;
-  }
-
-  public void setVerifications(Set<Session> verifications) {
-    this.verifications = verifications;
   }
 
 }

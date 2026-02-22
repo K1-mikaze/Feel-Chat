@@ -56,7 +56,7 @@ public class UserController {
         return ResponseEntity.status(401).build();
       }
 
-      return ResponseEntity.accepted().header("session-Id", session.getId().toString()).body(session.getUser());
+      return ResponseEntity.accepted().header("session-Id", session.getId().toString()).body(userGotten);
     }
     return ResponseEntity.status(404).build();
   }
@@ -95,6 +95,31 @@ public class UserController {
   @PatchMapping("/updatepassword")
   public ResponseEntity<String> updatePassword(@RequestHeader("session-id") String sessionId,
       @RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      switch (userService.updateUserPassword(UUID.fromString(jsonNode.get("user_id").asString()),
+          UUID.fromString(sessionId), jsonNode.get("new_password").asString(),
+          jsonNode.get("old_password").asString())) {
+        case 0:
+          return ResponseEntity.status(404).build();
+        case 1:
+          return ResponseEntity.status(201).build();
+        case 2:
+          return ResponseEntity.status(401).build();
+        case 3:
+          return ResponseEntity.status(409).build();
+        default:
+          return ResponseEntity.status(500).build();
+      }
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
+    }
+  }
+
+  @PatchMapping("/forgotpassword")
+  public ResponseEntity<String> forgotPassword(@RequestBody String body) {
     try {
       ObjectMapper mapper = new ObjectMapper();
       JsonNode jsonNode = mapper.readTree(body);

@@ -118,6 +118,14 @@ public class UserService {
     return 0;
   }
 
+  public boolean forgotUserPassword(String email) {
+    Optional<User> userOptional = userRepository.findByEmail(email);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+    }
+    return false;
+  }
+
   public int updateUserPassword(UUID userId, UUID sessionId, String newPassword, String oldPassword) {
     Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
     if (sessionOptional.isPresent()) {

@@ -116,6 +116,7 @@ This endpoint will let the user log into his account
 - Returns 400 if not arguments given
 - Returns 401 if users is deleted
 - Returns 404 if user nos found
+- Returns 409 if user not verified
 
 ```javascript
 /* Example */
@@ -240,10 +241,11 @@ session-id : dafd23eaf
 body:
 {
  "user_id" : "fafsafaj22842",
+ "code" : 213134
 }
 ```
 
-Returns 200 if email sent
+Returns 200 user Verified
 Returns 404 if code not found
 return 500 if server error
 

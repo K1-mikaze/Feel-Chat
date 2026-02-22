@@ -7,7 +7,7 @@ class UserService {
   final http.Client _client = http.Client();
   final SecureStorageService _secureStorage = SecureStorageService();
 
-  Future<bool> login(String email, String password) async {
+  Future<int> login(String email, String password) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/signin'),
       headers: {'Content-Type': 'application/json'},
@@ -23,9 +23,10 @@ class UserService {
       if (sessionId != null) {
         await _secureStorage.write('session-id', sessionId);
       }
-      return true;
+      return 1;
     }
-    return false;
+    if (response.statusCode == 401 || response.statusCode == 404) return 0;
+    return 3;
   }
 
   Future<List<dynamic>?> getCurrentChats(
@@ -168,5 +169,47 @@ class UserService {
     );
 
     return response.statusCode == 201;
+  }
+
+  Future<bool> sendEmail({
+    required String sessionId,
+    required String userId,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/sendemail'),
+      headers: {'Content-Type': 'application/json', 'session-id': sessionId},
+      body: jsonEncode({'user_id': userId}),
+    );
+
+    return response.statusCode == 200;
+  }
+
+  Future<int> verifyEmail({
+    required String sessionId,
+    required String userId,
+    required int code,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/verifyemail'),
+      headers: {'Content-Type': 'application/json', 'session-id': sessionId},
+      body: jsonEncode({'user_id': userId, 'code': code}),
+    );
+
+    if (response.statusCode == 200) return 1;
+    if (response.statusCode == 404) return 2;
+    return 0;
+  }
+
+  Future<bool> delete({
+    required String sessionId,
+    required String userId,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/delete'),
+      headers: {'Content-Type': 'application/json', 'session-id': sessionId},
+      body: jsonEncode({'user_id': userId}),
+    );
+
+    return response.statusCode == 200;
   }
 }

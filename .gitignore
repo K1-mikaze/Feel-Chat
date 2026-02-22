@@ -74,6 +74,8 @@ android/
 ios/
 linux/
 macos/
+.android/
+.gitignore
 prompt.md
 web/
 windows/

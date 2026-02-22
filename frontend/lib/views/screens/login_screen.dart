@@ -27,9 +27,12 @@ class _LoginScreenState extends State<LoginScreen> {
     final secureStorage = SecureStorageService();
     final sessionId = await secureStorage.read('session-id');
     final userId = await secureStorage.read('id');
+    final verified = await secureStorage.read('verified');
 
-    if (sessionId != null && userId != null && mounted) {
+    if (sessionId != null && userId != null && mounted && verified == 'true') {
       Navigator.pushReplacementNamed(context, AppRoutes.menuScreen);
+    }else if (sessionId != null && userId != null && mounted && verified == 'false'){
+      Navigator.pushReplacementNamed(context, AppRoutes.verifyAccountScreen);
     }
   }
 
@@ -37,21 +40,42 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       final userService = UserService();
-      final success = await userService.login(
+      final result = await userService.login(
         _emailController.text,
         _passwordController.text,
       );
       setState(() => _isLoading = false);
-      if (success) {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, AppRoutes.menuScreen);
-        }
-      } else {
-        if (mounted) {
+      if (!mounted) return;
+
+      switch (result) {
+        case 1:
+          final secureStorageService = SecureStorageService();
+          final id = await secureStorageService.read('id');
+          final sessionId = await secureStorageService.read('session-id');
+          final verified = await secureStorageService.read('verified');
+          if (id != null && sessionId != null  && verified == 'false' ) {
+            await userService.sendEmail(sessionId: sessionId, userId: id);
+            if (mounted) {
+              Navigator.pushReplacementNamed(
+                context,
+                AppRoutes.verifyAccountScreen,
+              );
+            }
+          }
+          if(mounted && verified == 'true') {
+            Navigator.pushReplacementNamed(context, AppRoutes.menuScreen);
+          }
+          break;
+        case 0:
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('Login failed')));
-        }
+          ).showSnackBar(const SnackBar(content: Text('User not found')));
+          break;
+        case 3:
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Something went wrong')));
+          break;
       }
     }
   }
@@ -115,10 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.signinScreen,
-                  );
+                  Navigator.pushNamed(context, AppRoutes.signinScreen);
                 },
                 child: const Text("You don't have an account?"),
               ),
