@@ -176,4 +176,28 @@ public class User {
         + "\ncountry: " + country;
   }
 
+  public boolean isVerified() {
+    return verified;
+  }
+
+  public void setVerified(boolean verified) {
+    this.verified = verified;
+  }
+
+  public Set<Session> getSessions() {
+    return sessions;
+  }
+
+  public void setSessions(Set<Session> sessions) {
+    this.sessions = sessions;
+  }
+
+  public Set<Session> getVerifications() {
+    return verifications;
+  }
+
+  public void setVerifications(Set<Session> verifications) {
+    this.verifications = verifications;
+  }
+
 }

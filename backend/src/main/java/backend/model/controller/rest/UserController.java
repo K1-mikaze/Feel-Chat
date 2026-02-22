@@ -1,6 +1,5 @@
 package backend.model.controller.rest;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.model.entity.Session;
 import backend.model.entity.User;
-import backend.model.repository.SessionRepository;
-import backend.model.repository.UserRepository;
 import backend.model.service.UserService;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -161,6 +158,44 @@ public class UserController {
     } catch (Exception e) {
       System.out.println("Exception:\n" + e);
       return ResponseEntity.status(400).build();
+    }
+
+  }
+
+  @PostMapping("/sendemail")
+  public ResponseEntity<Void> sendEmail(@RequestHeader("session-id") String sessionId, @RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      if (userService.createVerificationCode(UUID.fromString(sessionId),
+          UUID.fromString(jsonNode.get("user_id").asString()))) {
+        return ResponseEntity.ok().build();
+      }
+      return ResponseEntity.status(400).build();
+
+    } catch (Exception e) {
+      System.out.println(e);
+      return ResponseEntity.status(500).build();
+    }
+
+  }
+
+  @PostMapping("/verifyemail")
+  public ResponseEntity<Void> verifyEmail(@RequestHeader("session-id") String sessionId, @RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      if (userService.verifyUserEmail(UUID.fromString(sessionId),
+          UUID.fromString(jsonNode.get("user_id").asString()), jsonNode.get("code").asInt())) {
+        return ResponseEntity.ok().build();
+      }
+      return ResponseEntity.status(404).build();
+
+    } catch (Exception e) {
+      System.out.println(e);
+      return ResponseEntity.status(500).build();
     }
 
   }

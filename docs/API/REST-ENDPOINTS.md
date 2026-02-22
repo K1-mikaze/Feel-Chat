@@ -103,6 +103,7 @@ Header: **session-id** : e1e13e1dsfat3t2ge
 
 This endpoint will let the user log into his account
 
+**Endpoint:** `/signin`  
 **Type:** POST
 **Parameters: **
 
@@ -190,6 +191,61 @@ body:
 
 Returns 200 if deleted
 Returns 404 if Session not found
+
+## Send Email
+
+This endpoint will send an email to the email of the user with a verification code
+
+**Endpoint:** `/sendemail`
+Header: **session-id** : e1e13e1dsfat3t2ge
+**Type:** Post
+**Parameters: **
+
+| Type | Object  |
+| ---- | ------- |
+| UUID | user_id |
+
+```javascript
+Header:
+session-id : dafd23eaf
+
+body:
+{
+ "user_id" : "fafsafaj22842",
+}
+```
+
+Returns 200 if email sent
+Returns 400 if bad request
+return 500 if server error
+
+## Verify Email
+
+This endpoint will send an email to the email of the user with a verification code
+
+**Endpoint:** `/verifyemail`
+Header: **session-id** : e1e13e1dsfat3t2ge
+**Type:** Post
+**Parameters: **
+
+| Type | Object  |
+| ---- | ------- |
+| UUID | user_id |
+| int  | code    |
+
+```javascript
+Header:
+session-id : dafd23eaf
+
+body:
+{
+ "user_id" : "fafsafaj22842",
+}
+```
+
+Returns 200 if email sent
+Returns 404 if code not found
+return 500 if server error
 
 ## Not Implemented Yet
 
