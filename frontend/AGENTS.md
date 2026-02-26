@@ -1,26 +1,19 @@
 # AGENTS.md - Feel Chat Frontend
 
-This document provides guidance for agentic coding agents working on the Feel Chat Flutter frontend.
-
-## Project Overview
-
-A Flutter chat application using BLoC for state management, HTTP for API calls, and Flutter Secure Storage for sensitive data. Targets Android, iOS, Web, macOS, Linux, and Windows.
+A Flutter chat application using BLoC for state management, HTTP for API calls, and Flutter Secure Storage. Targets Android, iOS, Web, macOS, Linux, and Windows.
 
 ## Development Environment
 
-This project uses Nix to provide a reproducible development environment with Flutter pre-installed.
+Uses Nix for a reproducible environment with Flutter pre-installed.
 
 ```bash
-# Enter the development environment
 nix develop .#frontend
 ```
-
-Once inside the environment, you can run all Flutter commands (flutter pub get, flutter run, etc.) directly.
 
 ## Build Commands
 
 ```bash
-# Get dependencies
+# Dependencies
 flutter pub get
 
 # Run the app
@@ -36,22 +29,17 @@ flutter build windows      # Windows
 
 # Run on specific device
 flutter run -d <device-id>
-
-# List available devices
-flutter devices
+flutter devices            # List available devices
 ```
 
 ## Lint & Analysis
 
 ```bash
-# Run static analysis (linting)
-flutter analyze
-
-# Fix automatically fixable issues
-flutter analyze --fix
+flutter analyze            # Run static analysis
+flutter analyze --fix     # Fix auto-fixable issues
 ```
 
-The project uses `flutter_lints` (see `analysis_options.yaml`). The analyzer is configured with the recommended Flutter lint rules.
+The project uses `flutter_lints` (see `analysis_options.yaml`).
 
 ## Testing
 
@@ -74,29 +62,24 @@ flutter test --coverage
 
 ## Code Style Guidelines
 
-### File Naming
-- Use **snake_case**: `login_screen.dart`, `user_service.dart`, `validations.dart`
-- Group related files: `views/screens/`, `data/services/`, `utils/validators/`
-
-### Class Naming
-- Use **PascalCase**: `LoginScreen`, `UserService`, `SecureStorageService`
-
-### Variables & Methods
-- Use **camelCase**: `userService`, `sessionId`, `handleLogin()`
+### Naming Conventions
+- **Files**: snake_case (`login_screen.dart`, `user_service.dart`)
+- **Classes**: PascalCase (`LoginScreen`, `UserService`)
+- **Methods/Variables**: camelCase (`userService`, `handleLogin()`)
 
 ### Imports
 - Use package imports: `import 'package:frontend/data/services/user_service.dart';`
 - Order: dart: → package: → relative
-- Use aliases for clarity: `import 'package:http/http.dart' as http;`
+- Use aliases: `import 'package:http/http.dart' as http;`
 
 ### Formatting
 - 2-space indentation
 - Trailing commas for readability
-- Const constructors when possible: `const LoginScreen({super.key})`
+- Use `const` constructors when possible
 - Use `late` for lazy initialization
 
 ### Types
-- Enable strict typing in analysis
+- Enable strict typing
 - Prefer explicit types over `var` for public APIs
 - Use `final` by default, `var` only when reassignment needed
 
@@ -116,24 +99,12 @@ flutter test --coverage
 ```
 lib/
 ├── main.dart                    # App entry point
-├── configurations/
-│   └── routes/app_routes.dart   # Route definitions
-├── data/
-│   └── services/
-│       ├── user_service.dart   # API calls
-│       └── secure_storage_service.dart
-├── utils/
-│   └── validators/validations.dart
+├── configurations/routes/       # Route definitions
+├── data/services/              # API services
+├── utils/validators/           # Validation logic
 └── views/
-    ├── screens.dart             # Screen exports
-    ├── screens/
-    │   ├── login_screen.dart
-    │   ├── signup_screen.dart
-    │   ├── menu_screen.dart
-    │   ├── account_screen.dart
-    │   └── verify_account_screen.dart
-    └── widgets/
-        └── feelchat_appbar.dart
+    ├── screens/                # Screen widgets
+    └── widgets/                # Reusable widgets
 test/
 └── widget_test.dart
 ```
