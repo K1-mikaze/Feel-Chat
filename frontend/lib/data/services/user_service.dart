@@ -212,4 +212,26 @@ class UserService {
 
     return response.statusCode == 200;
   }
+
+  Future<bool> sendEmail2(String email) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/sendemail2'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+    return response.statusCode == 200;
+  }
+
+  Future<bool> forgotPassword({
+    required String email,
+    required String code,
+    required String password,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/forgotpassword'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'code': code, 'password': password}),
+    );
+    return response.statusCode == 201;
+  }
 }

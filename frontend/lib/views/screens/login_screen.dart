@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  // TODO: Implement forgot password
+                  Navigator.pushNamed(context, AppRoutes.forgotPasswordScreen);
                 },
                 child: const Text('Forgot Password?'),
               ),

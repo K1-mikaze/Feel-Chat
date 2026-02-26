@@ -220,6 +220,61 @@ Returns 200 if email sent
 Returns 400 if bad request
 return 500 if server error
 
+## Send Email 2
+
+This endpoint will send an email to the email of the user with a verification code
+
+**Endpoint:** `/sendemail2`
+**Type:** Post
+**Parameters: **
+
+| Type   | Object |
+| ------ | ------ |
+| string | email  |
+
+```javascript
+Header:
+
+body:
+{
+ "email" : "fafsafaj22842",
+}
+```
+
+Returns 200 if email sent
+Returns 400 if bad request
+return 500 if server error
+
+## Forgot Password
+
+this endpoints will get an email,code and password for changing the user password if the code coincide.
+
+**Endpoint:** `/forgotpassword`
+**Type:** Post
+**Parameters: **
+
+| Type   | Object   |
+| ------ | -------- |
+| String | email    |
+| int    | code     |
+| String | password |
+
+```javascript
+Header:
+
+body:
+{
+ "email" : "fafsafaj22842",
+ "code" : 213134
+ "password" : Hernesto123
+}
+```
+
+Returns 200 if code coincide and the password was changed
+Returns 404 if code not found
+Returns 409 if the code doesn't exist
+return 500 if server error
+
 ## Verify Email
 
 This endpoint will send an email to the email of the user with a verification code

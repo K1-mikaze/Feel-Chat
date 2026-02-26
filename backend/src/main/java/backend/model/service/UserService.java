@@ -118,14 +118,6 @@ public class UserService {
     return 0;
   }
 
-  public boolean forgotUserPassword(String email) {
-    Optional<User> userOptional = userRepository.findByEmail(email);
-    if (userOptional.isPresent()) {
-      User user = userOptional.get();
-    }
-    return false;
-  }
-
   public int updateUserPassword(UUID userId, UUID sessionId, String newPassword, String oldPassword) {
     Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
     if (sessionOptional.isPresent()) {
@@ -193,11 +185,49 @@ public class UserService {
     return false;
   }
 
-  public boolean createVerificationCode(UUID sessionId, UUID userId) {
+  public boolean createVerificationCodeByEmail(String email) {
+    Optional<User> userOptional = userRepository.findByEmail(email);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      int code = generateRandomCode();
+      Verification verification = new Verification(user, code);
+      if (sendVerificationEmail(user.getEmail(), user.getUsername(), code)) {
+        verificationRepository.save(verification);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /*
+   * If 0 user not found
+   * if 1 code and user found
+   * if 2 code not found and user found
+   */
+  public int changePasswordWithVerificationCode(String email, int code, String newPassword) {
+    Optional<User> userOptional = userRepository.findByEmail(email);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      System.out.println(user.toString());
+      Optional<Verification> verificationOptional = verificationRepository.findByCodeAndUserId(code, user.getId());
+      if (verificationOptional.isPresent()) {
+        Verification verification = verificationOptional.get();
+        verification.setExpired(true);
+        verificationRepository.save(verification);
+        user.setPassword(newPassword);
+        userRepository.save(user);
+        return 1;
+      }
+      return 2;
+    }
+    return 0;
+  }
+
+  public boolean createVerificationCodeBySessionAndUser(UUID sessionId, UUID userId) {
     Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
     if (sessionOptional.isPresent()) {
       User user = sessionOptional.get().getUser();
-      System.out.println(")==== is Present");
       int code = generateRandomCode();
       Verification verification = new Verification(user, code);
       if (sendVerificationEmail(user.getEmail(), user.getUsername(), code)) {

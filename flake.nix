@@ -79,7 +79,8 @@
         program = let
           script = pkgs.writeShellScriptBin "start-frontend" ''
             if [[ $(basename "$PWD") == "frontend" ]]; then
-            nix run --refresh github:K1-mikaze/Nix-Environments/main?dir=flakes/language/dart#flutter -- run
+              ${pkgs.flutter}/bin/flutter config --android-sdk ./android/sdk/
+              ${pkgs.flutter}/bin/flutter run
             else
               echo "> You're not in the required folder 'frontend/' "
               exit
