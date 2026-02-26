@@ -215,7 +215,7 @@ public class UserService {
         Verification verification = verificationOptional.get();
         verification.setExpired(true);
         verificationRepository.save(verification);
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         return 1;
       }

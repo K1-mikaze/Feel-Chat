@@ -27,6 +27,7 @@ public class User {
   @Column(name = "username", nullable = false, unique = true, length = 80)
   private String username = "";
 
+  @JsonIgnore
   @Column(name = "password", nullable = false, length = 60)
   private String password = "";
 
@@ -45,6 +46,9 @@ public class User {
   @Column(name = "verified", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
   private boolean verified = false;
 
+  @Column(name = "administrator", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+  private boolean administrator = false;
+
   @JsonIgnore
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private Set<Session> sessions = new HashSet<>();
@@ -57,7 +61,7 @@ public class User {
   }
 
   public User(UUID id, String email, String username, String password, String city, String country,
-      LocalDateTime created_at, boolean deleted, boolean verified) {
+      LocalDateTime created_at, boolean deleted, boolean verified, boolean administrator) {
     this.id = id;
     this.email = email;
     this.username = username;
@@ -67,6 +71,7 @@ public class User {
     this.created_at = created_at;
     this.deleted = deleted;
     this.verified = verified;
+    this.administrator = administrator;
   }
 
   public User(String email, String username, String password, String city, String country) {
@@ -159,6 +164,38 @@ public class User {
     this.deleted = deleted;
   }
 
+  public boolean isVerified() {
+    return verified;
+  }
+
+  public void setVerified(boolean verified) {
+    this.verified = verified;
+  }
+
+  public Set<Session> getSessions() {
+    return sessions;
+  }
+
+  public void setSessions(Set<Session> sessions) {
+    this.sessions = sessions;
+  }
+
+  public boolean isAdministrator() {
+    return administrator;
+  }
+
+  public void setAdministrator(boolean administrator) {
+    this.administrator = administrator;
+  }
+
+  public Set<Verification> getVerifications() {
+    return verifications;
+  }
+
+  public void setVerifications(Set<Verification> verifications) {
+    this.verifications = verifications;
+  }
+
   // return false if any variable of the object is empty
   @JsonIgnore
   public boolean isEmpty() {
@@ -179,22 +216,6 @@ public class User {
     return "User:\nId:" + id.toString() + "\nemail: " + email + "\npassword: " + password + "\nusername: " + username
         + "\ncity: " + city
         + "\ncountry: " + country;
-  }
-
-  public boolean isVerified() {
-    return verified;
-  }
-
-  public void setVerified(boolean verified) {
-    this.verified = verified;
-  }
-
-  public Set<Session> getSessions() {
-    return sessions;
-  }
-
-  public void setSessions(Set<Session> sessions) {
-    this.sessions = sessions;
   }
 
 }
