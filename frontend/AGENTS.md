@@ -6,6 +6,17 @@ This document provides guidance for agentic coding agents working on the Feel Ch
 
 A Flutter chat application using BLoC for state management, HTTP for API calls, and Flutter Secure Storage for sensitive data. Targets Android, iOS, Web, macOS, Linux, and Windows.
 
+## Development Environment
+
+This project uses Nix to provide a reproducible development environment with Flutter pre-installed.
+
+```bash
+# Enter the development environment
+nix develop .#frontend
+```
+
+Once inside the environment, you can run all Flutter commands (flutter pub get, flutter run, etc.) directly.
+
 ## Build Commands
 
 ```bash
