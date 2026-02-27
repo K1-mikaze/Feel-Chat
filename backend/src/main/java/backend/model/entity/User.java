@@ -8,6 +8,8 @@ import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -48,6 +50,9 @@ public class User {
 
   @Column(name = "administrator", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
   private boolean administrator = false;
+
+  @Enumerated(EnumType.STRING)
+  private userMood mood = userMood.HAPPY;
 
   @JsonIgnore
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
