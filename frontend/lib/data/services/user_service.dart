@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:frontend/bloc/user_data/user_data_bloc.dart';
+import 'package:frontend/bloc/user_data/user_data_event.dart';
 import 'package:frontend/data/services/secure_storage_service.dart';
 
 class UserService {
@@ -108,6 +110,7 @@ class UserService {
       for (final entry in userData.entries) {
         await _secureStorage.write(entry.key, entry.value.toString());
       }
+      UserDataBloc.instance.add(LoadUserData());
       return true;
     }
     return false;

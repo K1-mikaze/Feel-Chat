@@ -178,7 +178,7 @@ class _AccountScreenState extends State<AccountScreen> {
       userId: userId,
       country: _selectedCountry!,
       city: _selectedCity!,
-      mood: _selectedMood,
+      mood: _selectedMood!,
     );
 
     setState(() {
@@ -187,7 +187,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
     if (success) {
       await _userService.getUser(sessionId, userId);
-      UserDataBloc.instance.add(LoadUserData());
+      await Future.delayed(const Duration(milliseconds: 300));
       _loadFromBloc();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -537,7 +537,8 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       appBar: feelchatAppbar(
         context,
-        isAdmin: UserDataBloc.instance.state is UserDataLoaded &&
+        isAdmin:
+            UserDataBloc.instance.state is UserDataLoaded &&
             (UserDataBloc.instance.state as UserDataLoaded).administrator ==
                 'true',
       ),

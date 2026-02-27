@@ -12,6 +12,8 @@ class UserDataRepository {
     final email = await _secureStorage.read('email');
     final password = await _secureStorage.read('password');
     final administrator = await _secureStorage.read('administrator');
+    final verified = await _secureStorage.read('verified');
+    final mood = await _secureStorage.read('mood');
 
     return {
       'session-id': sessionId,
@@ -22,6 +24,8 @@ class UserDataRepository {
       'email': email,
       'password': password,
       'administrator': administrator,
+      'verified': verified,
+      'mood': mood,
     };
   }
 }
