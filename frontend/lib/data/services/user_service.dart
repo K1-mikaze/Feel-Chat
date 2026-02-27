@@ -80,11 +80,17 @@ class UserService {
     required String userId,
     required String country,
     required String city,
+    required String mood,
   }) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/updateinformation'),
       headers: {'Content-Type': 'application/json', 'session-id': sessionId},
-      body: jsonEncode({'user_id': userId, 'country': country, 'city': city}),
+      body: jsonEncode({
+        'user_id': userId,
+        'country': country,
+        'city': city,
+        'mood': mood,
+      }),
     );
 
     return response.statusCode == 201;

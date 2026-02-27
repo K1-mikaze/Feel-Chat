@@ -1,6 +1,6 @@
 # AGENTS.md - Feel Chat Frontend
 
-> **Important:** When running Flutter commands, first enter the development environment using `nix develop .#frontend`
+> **Important:** When running Flutter commands, first enter the development environment using `nix-shell -p  flutter --run 'flutter analyze# This is a Example'`
 
 A Flutter chat application using BLoC for state management, HTTP for API calls, and Flutter Secure Storage. Targets Android, iOS, Web, macOS, Linux, and Windows.
 
@@ -9,7 +9,7 @@ A Flutter chat application using BLoC for state management, HTTP for API calls, 
 Uses Nix for a reproducible environment with Flutter pre-installed.
 
 ```bash
-nix develop .#frontend
+nix-shell -p flutter
 ```
 
 ## Build Commands
@@ -65,33 +65,39 @@ flutter test --coverage
 ## Code Style Guidelines
 
 ### Naming Conventions
+
 - **Files**: snake_case (`login_screen.dart`, `user_service.dart`)
 - **Classes**: PascalCase (`LoginScreen`, `UserService`)
 - **Methods/Variables**: camelCase (`userService`, `handleLogin()`)
 
 ### Imports
+
 - Use package imports: `import 'package:frontend/data/services/user_service.dart';`
 - Order: dart: → package: → relative
 - Use aliases: `import 'package:http/http.dart' as http;`
 
 ### Formatting
+
 - 2-space indentation
 - Trailing commas for readability
 - Use `const` constructors when possible
 - Use `late` for lazy initialization
 
 ### Types
+
 - Enable strict typing
 - Prefer explicit types over `var` for public APIs
 - Use `final` by default, `var` only when reassignment needed
 
 ### Error Handling
+
 - Use try-catch for async operations
 - Display user-friendly error messages via SnackBar
 - Handle null safety with `?` and `??` operators
 - Check `mounted` before calling setState in async callbacks
 
 ### Widgets
+
 - Use `const` constructors for stateless widgets
 - Extract reusable widgets to `lib/views/widgets/`
 - Follow Material Design guidelines
@@ -120,6 +126,7 @@ test/
 ## Common Patterns
 
 ### API Service Method
+
 ```dart
 Future<bool> someAction({
   required String sessionId,
@@ -135,6 +142,7 @@ Future<bool> someAction({
 ```
 
 ### Screen with Form
+
 ```dart
 class SomeScreen extends StatefulWidget {
   const SomeScreen({super.key});

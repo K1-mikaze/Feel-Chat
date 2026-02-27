@@ -28,6 +28,7 @@ class UserDataBloc extends Bloc<UserDataEvent, UserDataState> {
           email: data['email'],
           administrator: data['administrator'],
           verified: data['verified'],
+          mood: data['mood'],
         ),
       );
     } catch (e) {

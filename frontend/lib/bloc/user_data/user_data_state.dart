@@ -13,6 +13,7 @@ class UserDataLoaded extends UserDataState {
   final String? email;
   final String? administrator;
   final String? verified;
+  final String? mood;
 
   UserDataLoaded({
     this.sessionId,
@@ -23,6 +24,7 @@ class UserDataLoaded extends UserDataState {
     this.email,
     this.administrator,
     this.verified,
+    this.mood,
   });
 
   bool get hasSession => sessionId != null && sessionId!.isNotEmpty;

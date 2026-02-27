@@ -76,8 +76,10 @@ class _AccountScreenState extends State<AccountScreen> {
 
   String? _selectedCountry;
   String? _selectedCity;
+  String? _selectedMood;
   String? _originalCountry;
   String? _originalCity;
+  String? _originalMood;
   String? _username;
   bool _loading = true;
   bool _isApplying = false;
@@ -87,6 +89,13 @@ class _AccountScreenState extends State<AccountScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  static const Map<String, String> _moods = {
+    'SAD': 'Sad',
+    'HAPPY': 'Happy',
+    'SLEEPY': 'Sleppy',
+    'MAD': 'Mad',
+  };
 
   @override
   void dispose() {
@@ -100,26 +109,26 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCountry();
+    _loadFromBloc();
   }
 
-  Future<void> _loadCountry() async {
-    final secureStorage = SecureStorageService();
-    final country = await secureStorage.read('country');
-    final city = await secureStorage.read('city');
-    final username = await secureStorage.read('username');
-    if (country != null && _countryCities.containsKey(country)) {
+  void _loadFromBloc() {
+    final state = UserDataBloc.instance.state;
+    if (state is UserDataLoaded) {
       setState(() {
-        _selectedCountry = country;
-        _selectedCity = city;
-        _originalCountry = country;
-        _originalCity = city;
+        _username = state.username;
+        _selectedCountry = state.country;
+        _selectedCity = state.city;
+        _selectedMood = state.mood;
+        _originalCountry = state.country;
+        _originalCity = state.city;
+        _originalMood = state.mood;
+        _loading = false;
       });
+    } else {
+      UserDataBloc.instance.add(LoadUserData());
+      Future.delayed(const Duration(milliseconds: 500), _loadFromBloc);
     }
-    setState(() {
-      _username = username;
-      _loading = false;
-    });
   }
 
   static List<DropdownMenuItem<String>> get _countryItems =>
@@ -137,7 +146,9 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   bool get _hasChanges =>
-      _selectedCountry != _originalCountry || _selectedCity != _originalCity;
+      _selectedCountry != _originalCountry ||
+      _selectedCity != _originalCity ||
+      _selectedMood != _originalMood;
 
   Future<void> _applyChanges() async {
     if (!_hasChanges) return;
@@ -167,6 +178,7 @@ class _AccountScreenState extends State<AccountScreen> {
       userId: userId,
       country: _selectedCountry!,
       city: _selectedCity!,
+      mood: _selectedMood,
     );
 
     setState(() {
@@ -176,7 +188,7 @@ class _AccountScreenState extends State<AccountScreen> {
     if (success) {
       await _userService.getUser(sessionId, userId);
       UserDataBloc.instance.add(LoadUserData());
-      await _loadCountry();
+      _loadFromBloc();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Changes applied successfully')),
@@ -274,7 +286,7 @@ class _AccountScreenState extends State<AccountScreen> {
       case 1:
         await _userService.getUser(sessionId, userId);
         UserDataBloc.instance.add(LoadUserData());
-        await _loadCountry();
+        _loadFromBloc();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Username updated successfully')),
@@ -579,6 +591,24 @@ class _AccountScreenState extends State<AccountScreen> {
                 });
               },
               items: _cityItems,
+            ),
+            const SizedBox(height: 16),
+            DropdownButton<String>(
+              hint: const Text('Select Mood'),
+              value: _selectedMood,
+              onChanged: (value) {
+                setState(() {
+                  _selectedMood = value;
+                });
+              },
+              items: _moods.entries
+                  .map(
+                    (entry) => DropdownMenuItem(
+                      value: entry.key,
+                      child: Text(entry.value),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
