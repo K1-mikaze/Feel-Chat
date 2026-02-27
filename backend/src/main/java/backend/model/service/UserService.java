@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import backend.model.entity.Session;
 import backend.model.entity.User;
 import backend.model.entity.Verification;
+import backend.model.entity.userMood;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -101,7 +102,7 @@ public class UserService {
   }
 
   public int updateUserInformation(UUID sessionId, UUID userId, String city,
-      String country) {
+      String country, String mood) {
     Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
     if (sessionOptional.isPresent()) {
       Session session = sessionOptional.get();
@@ -109,6 +110,13 @@ public class UserService {
         User user = session.getUser();
         user.setCountry(country);
         user.setCity(city);
+        switch (mood) {
+          case "MAD" -> user.setMood(userMood.MAD);
+          case "SLEEPY" -> user.setMood(userMood.SLEEPY);
+          case "SAD" -> user.setMood(userMood.SAD);
+          case "HAPPY" -> user.setMood(userMood.HAPPY);
+          default -> user.setMood(userMood.HAPPY);
+        }
         userRepository.save(user);
         return 1;
       } else {
@@ -209,7 +217,7 @@ public class UserService {
     Optional<User> userOptional = userRepository.findByEmail(email);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
-      System.out.println(user.toString());
+      // System.out.println(user.toString());
       Optional<Verification> verificationOptional = verificationRepository.findByCodeAndUserId(code, user.getId());
       if (verificationOptional.isPresent()) {
         Verification verification = verificationOptional.get();
