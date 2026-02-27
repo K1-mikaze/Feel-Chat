@@ -76,7 +76,7 @@ linux/
 macos/
 .android/
 .gitignore
-# PROMPT.md
+PROMPT.md
 web/
 windows/
 .metadata
