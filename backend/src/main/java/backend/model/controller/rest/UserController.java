@@ -1,5 +1,6 @@
 package backend.model.controller.rest;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -187,6 +188,25 @@ public class UserController {
       return ResponseEntity.status(400).build();
     }
 
+  }
+
+  @PostMapping("/getsuggestionschats")
+  public ResponseEntity<List<User>> getSuggestionsChats(@RequestHeader("session-id") String sessionId,
+      @RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
+
+      List<User> users = userService.getUsersuggetions(UUID.fromString(sessionId),
+          UUID.fromString(jsonNode.get("user_id").asString()));
+      if (!users.isEmpty()) {
+        return ResponseEntity.status(200).body(users);
+      }
+      return ResponseEntity.status(404).build();
+    } catch (Exception e) {
+      System.out.println("Exception:\n" + e);
+      return ResponseEntity.status(400).build();
+    }
   }
 
   @PostMapping("/sendemail")

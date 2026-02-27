@@ -7,6 +7,7 @@ import backend.model.entity.User;
 import backend.model.entity.Verification;
 import backend.model.entity.userMood;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.security.SecureRandom;
@@ -174,6 +175,21 @@ public class UserService {
 
     }
     return userOptional;
+  }
+
+  public List<User> getUsersuggetions(UUID sessionId, UUID userId) {
+    Optional<Session> sessionOptional = sessionRepository.findByIdAndUserId(sessionId, userId);
+    if (sessionOptional.isPresent()) {
+      Session session = sessionOptional.get();
+      if (!session.isExpired()) {
+        User user = session.getUser();
+        String city = user.getCity();
+        List<User> users = userRepository.findByCityAndDeletedFalse(city);
+        users.removeIf(u -> u.getId().equals(userId));
+        return users;
+      }
+    }
+    return List.of();
   }
 
   public boolean verifyUserEmail(UUID sessionId, UUID userId, int code) {
