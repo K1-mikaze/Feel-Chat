@@ -250,7 +250,7 @@ public class UserController {
 
       switch (userService.updateUserInformation(UUID.fromString(sessionId),
           UUID.fromString(jsonNode.get("user_id").asString()), jsonNode.get("city").asString(),
-          jsonNode.get("country").asString())) {
+          jsonNode.get("country").asString(), jsonNode.get("mood").asString())) {
         case 0:
           return ResponseEntity.status(404).build();
         case 1:

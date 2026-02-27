@@ -223,4 +223,12 @@ public class User {
         + "\ncountry: " + country;
   }
 
+  public userMood getMood() {
+    return mood;
+  }
+
+  public void setMood(userMood mood) {
+    this.mood = mood;
+  }
+
 }
