@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/bloc/user_data/user_data_bloc.dart';
+import 'package:frontend/bloc/user_data/user_data_event.dart';
+import 'package:frontend/bloc/user_data/user_data_state.dart';
 import 'package:frontend/configurations/routes/app_routes.dart';
 import 'package:frontend/data/services/secure_storage_service.dart';
 import 'package:frontend/data/services/user_service.dart';
@@ -172,6 +175,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
     if (success) {
       await _userService.getUser(sessionId, userId);
+      UserDataBloc.instance.add(LoadUserData());
       await _loadCountry();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -269,6 +273,7 @@ class _AccountScreenState extends State<AccountScreen> {
     switch (result) {
       case 1:
         await _userService.getUser(sessionId, userId);
+        UserDataBloc.instance.add(LoadUserData());
         await _loadCountry();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -439,8 +444,7 @@ class _AccountScreenState extends State<AccountScreen> {
         }
         break;
       case 0:
-        await secureStorage.delete('session-id');
-        await secureStorage.delete('id');
+        await secureStorage.deleteAll();
         if (mounted) {
           ScaffoldMessenger.of(
             context,
@@ -496,8 +500,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
 
     if (success) {
-      await secureStorage.delete('session-id');
-      await secureStorage.delete('id');
+      await secureStorage.deleteAll();
       if (mounted) {
         Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
       }
@@ -508,13 +511,24 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return Scaffold(
-        appBar: FeelChatAppBar(context),
+        appBar: feelchatAppbar(
+          context,
+          isAdmin:
+              UserDataBloc.instance.state is UserDataLoaded &&
+              (UserDataBloc.instance.state as UserDataLoaded).administrator ==
+                  'true',
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar: FeelChatAppBar(context),
+      appBar: feelchatAppbar(
+        context,
+        isAdmin: UserDataBloc.instance.state is UserDataLoaded &&
+            (UserDataBloc.instance.state as UserDataLoaded).administrator ==
+                'true',
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

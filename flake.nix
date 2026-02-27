@@ -44,15 +44,9 @@
 
       # Frontend
       frontend = pkgs.mkShell {
-        buildInputs = [];
+        buildInputs = with pkgs; [];
         shellHook = ''
-          if [[ $(basename "$PWD") == "frontend" ]]; then
-            nix develop --refresh github:K1-mikaze/Nix-Environments/main?dir=flakes/language/dart
-            exit
-          else
-            echo "> You're not in the required folder 'frontend/' "
-            exit
-          fi
+          nix develop --refresh github:K1-mikaze/Nix-Environments/main?dir=flakes/language/dart
         '';
       };
     };

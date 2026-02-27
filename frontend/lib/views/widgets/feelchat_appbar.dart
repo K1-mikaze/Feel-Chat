@@ -3,27 +3,43 @@ import 'package:frontend/data/services/secure_storage_service.dart';
 import 'package:frontend/data/services/user_service.dart';
 import 'package:frontend/configurations/routes/app_routes.dart';
 
-AppBar FeelChatAppBar(BuildContext context) {
+AppBar feelchatAppbar(
+  BuildContext context, {
+  bool isAdmin = false,
+  String title = '',
+}) {
   return AppBar(
     backgroundColor: Colors.purple,
-    title: const Text(
-      'Feel chat',
+    title: Text(
+      title.isEmpty ? 'Feel Chat' : title,
       style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white),
     ),
     actions: [
       PopupMenuButton<String>(
         iconColor: Colors.white,
         onSelected: (value) {
-           if (value == 'logout') {
+          if (value == 'logout') {
             _showLogoutDialog(context);
           } else if (value == 'account') {
             Navigator.pushNamed(context, AppRoutes.accountScreen);
+          } else if (value == 'admin') {
+            Navigator.pushNamed(context, AppRoutes.adminScreen);
           }
         },
-        itemBuilder: (context) => const [
-          PopupMenuItem(value: 'account', child: Text('Account')),
-          PopupMenuItem(value: 'logout', child: Text('Log Out')),
-        ],
+        itemBuilder: (context) {
+          final items = <PopupMenuEntry<String>>[
+            const PopupMenuItem(value: 'account', child: Text('Account')),
+          ];
+          if (isAdmin) {
+            items.add(
+              const PopupMenuItem(value: 'admin', child: Text('Admin')),
+            );
+          }
+          items.add(
+            const PopupMenuItem(value: 'logout', child: Text('Log Out')),
+          );
+          return items;
+        },
       ),
     ],
   );
@@ -48,17 +64,18 @@ Future<void> _showLogoutDialog(BuildContext context) async {
     ),
   );
 
-  if (result == true) {
+  if (result == true && context.mounted) {
     final secureStorage = SecureStorageService();
     final userId = await secureStorage.read('id');
     final sessionId = await secureStorage.read('session-id');
 
-    if (userId != null && sessionId != null) {
-      final logoutSuccess = await UserService().logOut(userId, sessionId);
+    if (userId != null && sessionId != null && context.mounted) {
+      final userService = UserService();
+      final logoutSuccess = await userService.logOut(userId, sessionId);
 
-      if (logoutSuccess) {
+      if (logoutSuccess && context.mounted) {
         Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
-      } else {
+      } else if (context.mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Something went wrong')));

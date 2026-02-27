@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:frontend/bloc/user_data/user_data_bloc.dart';
 import 'package:frontend/bloc/user_data/user_data_state.dart';
 import 'package:frontend/data/services/secure_storage_service.dart';
-import 'package:frontend/data/services/user_service.dart';
+import 'package:frontend/data/services/admin_service.dart';
 import 'package:frontend/views/widgets.dart';
 
-class MenuScreen extends StatefulWidget {
-  const MenuScreen({super.key});
+class AdminScreen extends StatefulWidget {
+  const AdminScreen({super.key});
 
   @override
-  State<MenuScreen> createState() => _MenuScreenState();
+  State<AdminScreen> createState() => _AdminScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
+class _AdminScreenState extends State<AdminScreen> {
   String? _userId;
   String? _sessionId;
   final TextEditingController _searchController = TextEditingController();
@@ -31,7 +31,15 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    AdminService adminService = AdminService();
+
     return Scaffold(
       appBar: feelchatAppbar(
         context,
@@ -39,6 +47,7 @@ class _MenuScreenState extends State<MenuScreen> {
             UserDataBloc.instance.state is UserDataLoaded &&
             (UserDataBloc.instance.state as UserDataLoaded).administrator ==
                 'true',
+        title: "Administrator Panel",
       ),
       body: Column(
         children: [
@@ -58,75 +67,19 @@ class _MenuScreenState extends State<MenuScreen> {
           Expanded(
             child: _userId != null && _sessionId != null
                 ? FutureBuilder(
-                    future: UserService().getSuggestionChats(
-                      _userId!,
-                      _sessionId!,
-                    ),
+                    future: adminService.getUsers(_sessionId!, _userId!),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      final chats = snapshot.data;
-                      if (chats == null) {
-                        return const Center(
-                          child: Text('Not suggestions Available'),
-                        );
+                      final users = snapshot.data;
+                      if (users == null) {
+                        return const Center(child: Text('No Users Available'));
                       }
                       return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: chats.length,
+                        itemCount: users.length,
                         itemBuilder: (context, index) {
-                          final chat = chats[index] as Map<String, dynamic>;
-                          return Container(
-                            width: 150,
-                            margin: const EdgeInsets.all(8),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.purple),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  chat['username'] ?? '',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(chat['country'] ?? ''),
-                                Text(chat['city'] ?? ''),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  )
-                : const Center(child: Text('Loading...')),
-          ),
-          Expanded(
-            flex: 2,
-            child: _userId != null && _sessionId != null
-                ? FutureBuilder(
-                    future: UserService().getCurrentChats(
-                      _userId!,
-                      _sessionId!,
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      final chats = snapshot.data;
-                      if (chats == null) {
-                        return const Center(child: Text('Not Chats Available'));
-                      }
-                      return ListView.builder(
-                        itemCount: chats.length,
-                        itemBuilder: (context, index) {
-                          final chat = chats[index] as Map<String, dynamic>;
+                          final user = users[index] as Map<String, dynamic>;
                           return Container(
                             margin: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -140,17 +93,20 @@ class _MenuScreenState extends State<MenuScreen> {
                               leading: CircleAvatar(
                                 backgroundColor: Colors.purple,
                                 child: Text(
-                                  (chat['username'] ?? '')[0]
+                                  (user['username'] ?? '')[0]
                                       .toString()
                                       .toUpperCase(),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                               title: Text(
-                                chat['username'] ?? '',
+                                user['username'] ?? '',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
+                              ),
+                              subtitle: Text(
+                                '${user['country'] ?? ''} ${user['city'] ?? ''}',
                               ),
                             ),
                           );

@@ -1,5 +1,7 @@
 # AGENTS.md - Feel Chat Frontend
 
+> **Important:** When running Flutter commands, first enter the development environment using `nix develop .#frontend`
+
 A Flutter chat application using BLoC for state management, HTTP for API calls, and Flutter Secure Storage. Targets Android, iOS, Web, macOS, Linux, and Windows.
 
 ## Development Environment

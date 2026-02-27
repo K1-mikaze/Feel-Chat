@@ -76,7 +76,7 @@ linux/
 macos/
 .android/
 .gitignore
-PROMPT.md
+# PROMPT.md
 web/
 windows/
 .metadata
@@ -115,3 +115,4 @@ build/
 
 ### VS Code ###
 .vscode/
+.android/sdk

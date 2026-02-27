@@ -43,22 +43,27 @@ public class UserController {
   }
 
   @PostMapping("/signin")
-  public ResponseEntity<User> signIn(@RequestBody User user) {
-    if (user.isLoginCredentialsEmpty()) {
-      return ResponseEntity.badRequest().build();
-    }
-    var sessionOptional = userService.findUser(user.getEmail(), user.getPassword());
-    if (sessionOptional.isPresent()) {
-      Session session = sessionOptional.get();
-      User userGotten = session.getUser();
+  public ResponseEntity<User> signIn(@RequestBody String body) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = mapper.readTree(body);
 
-      if (userGotten.isDeleted()) {
-        return ResponseEntity.status(401).build();
+      var sessionOptional = userService.findUser(jsonNode.get("email").asString(), jsonNode.get("password").asString());
+      if (sessionOptional.isPresent()) {
+        Session session = sessionOptional.get();
+        User userGotten = session.getUser();
+
+        if (userGotten.isDeleted()) {
+          return ResponseEntity.status(401).build();
+        }
+
+        return ResponseEntity.accepted().header("session-Id", session.getId().toString()).body(userGotten);
       }
+      return ResponseEntity.status(404).build();
 
-      return ResponseEntity.accepted().header("session-Id", session.getId().toString()).body(userGotten);
+    } catch (Exception e) {
+      return ResponseEntity.status(400).build();
     }
-    return ResponseEntity.status(404).build();
   }
 
   @PatchMapping("/logout")

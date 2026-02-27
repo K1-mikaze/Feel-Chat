@@ -69,8 +69,7 @@ class UserService {
     );
 
     if (response.statusCode == 200) {
-      _secureStorage.delete("id");
-      _secureStorage.delete("session-id");
+      _secureStorage.deleteAll();
       return true;
     }
     return false;

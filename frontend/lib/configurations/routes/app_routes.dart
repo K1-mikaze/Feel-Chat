@@ -10,6 +10,7 @@ class AppRoutes {
   static const String signinScreen = 'signinscreen';
   static const String verifyAccountScreen = 'verifyaccountscreen';
   static const String forgotPasswordScreen = 'forgotpasswordscreen';
+  static const String adminScreen = 'adminscreen';
 
   static Map<String, Widget Function(BuildContext)> routes = {
     loginScreen: (context) => const LoginScreen(),
@@ -18,5 +19,6 @@ class AppRoutes {
     signinScreen: (context) => const SignUpScreen(),
     verifyAccountScreen: (context) => const VerifyAccountScreen(),
     forgotPasswordScreen: (context) => const ForgotPasswordScreen(),
+    adminScreen: (context) => const AdminScreen(),
   };
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/bloc/user_data/user_data_bloc.dart';
+import 'package:frontend/bloc/user_data/user_data_event.dart';
+import 'package:frontend/bloc/user_data/user_data_state.dart';
 import 'package:frontend/data/services/user_service.dart';
 import 'package:frontend/data/services/secure_storage_service.dart';
 import 'package:frontend/utils/validators/validations.dart';
@@ -36,6 +39,20 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _waitForUserDataLoaded() async {
+    const timeout = Duration(seconds: 5);
+    const checkInterval = Duration(milliseconds: 100);
+    var elapsed = Duration.zero;
+
+    while (elapsed < timeout) {
+      if (UserDataBloc.instance.state is UserDataLoaded) {
+        return;
+      }
+      await Future.delayed(checkInterval);
+      elapsed += checkInterval;
+    }
+  }
+
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
@@ -53,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final id = await secureStorageService.read('id');
           final sessionId = await secureStorageService.read('session-id');
           final verified = await secureStorageService.read('verified');
+          UserDataBloc.instance.add(LoadUserData());
           if (id != null && sessionId != null  && verified == 'false' ) {
             await userService.sendEmail(sessionId: sessionId, userId: id);
             if (mounted) {
@@ -63,7 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           }
           if(mounted && verified == 'true') {
-            Navigator.pushReplacementNamed(context, AppRoutes.menuScreen);
+            await _waitForUserDataLoaded();
+            if (mounted) {
+              Navigator.pushReplacementNamed(context, AppRoutes.menuScreen);
+            }
           }
           break;
         case 0:
