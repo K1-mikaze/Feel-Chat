@@ -55,6 +55,10 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
+          Text(
+            "Suggested chats",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           Expanded(
             child: _userId != null && _sessionId != null
                 ? FutureBuilder(
@@ -80,24 +84,33 @@ class _MenuScreenState extends State<MenuScreen> {
                           return Container(
                             width: 150,
                             margin: const EdgeInsets.all(8),
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.purple),
+                              color: Colors.deepPurpleAccent,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   chat['username'] ?? '',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                     fontSize: 16,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(chat['country'] ?? ''),
-                                Text(chat['city'] ?? ''),
+                                Text(
+                                  "${chat['country']}, ${chat['city']}",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  "Mood: ${chat['mood'].toString().toLowerCase()}",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                               ],
                             ),
                           );
@@ -107,8 +120,9 @@ class _MenuScreenState extends State<MenuScreen> {
                   )
                 : const Center(child: Text('Loading...')),
           ),
+          Text("Current chats", style: TextStyle(fontWeight: FontWeight.w600)),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: _userId != null && _sessionId != null
                 ? FutureBuilder(
                     future: UserService().getCurrentChats(
