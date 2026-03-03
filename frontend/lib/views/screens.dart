@@ -5,3 +5,4 @@ export "package:frontend/views/screens/signup_screen.dart";
 export "package:frontend/views/screens/verify_account_screen.dart";
 export "package:frontend/views/screens/forgot_password_screen.dart";
 export "package:frontend/views/screens/admin_screen.dart";
+export "package:frontend/views/screens/update_user_admin_screen.dart";

@@ -11,6 +11,7 @@ class AppRoutes {
   static const String verifyAccountScreen = 'verifyaccountscreen';
   static const String forgotPasswordScreen = 'forgotpasswordscreen';
   static const String adminScreen = 'adminscreen';
+  static const String updateUserAdminScreen = 'updateuseradminscreen';
 
   static Map<String, Widget Function(BuildContext)> routes = {
     loginScreen: (context) => const LoginScreen(),
@@ -20,5 +21,7 @@ class AppRoutes {
     verifyAccountScreen: (context) => const VerifyAccountScreen(),
     forgotPasswordScreen: (context) => const ForgotPasswordScreen(),
     adminScreen: (context) => const AdminScreen(),
+    updateUserAdminScreen: (context) =>
+        UpdateUserAdminScreen(user: ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>),
   };
 }

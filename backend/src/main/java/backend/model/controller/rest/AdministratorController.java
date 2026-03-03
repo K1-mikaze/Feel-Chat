@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,9 +25,11 @@ import tools.jackson.databind.ObjectMapper;
 public class AdministratorController {
 
   private final AdministratorService administratorService;
+  private final PasswordEncoder passwordEncoder;
 
-  public AdministratorController(AdministratorService administratorService) {
+  public AdministratorController(AdministratorService administratorService, PasswordEncoder passwordEncoder) {
     this.administratorService = administratorService;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @DeleteMapping("/users")
@@ -59,12 +61,14 @@ public class AdministratorController {
       UUID sessionUUID = UUID.fromString(sessionId);
 
       User updatedUser = new User();
-      updatedUser.setId(UUID.fromString(jsonNode.get("id").asString()));
-      updatedUser.setEmail(jsonNode.get("email").asString());
-      updatedUser.setUsername(jsonNode.get("username").asString());
+
       updatedUser.setPassword(jsonNode.get("password").asString());
+      updatedUser.setId(UUID.fromString(jsonNode.get("id").asString()));
+      updatedUser.setUsername(jsonNode.get("username").asString());
       updatedUser.setCity(jsonNode.get("city").asString());
       updatedUser.setCountry(jsonNode.get("country").asString());
+      updatedUser.setDeleted(jsonNode.get("deleted").asBoolean());
+      updatedUser.setVerified(jsonNode.get("verified").asBoolean());
 
       if (administratorService.updateUser(sessionUUID, userId, updatedUser)) {
         return ResponseEntity.ok().build();

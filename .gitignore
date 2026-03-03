@@ -74,6 +74,7 @@ android/
 ios/
 linux/
 macos/
+app/
 .android/
 .gitignore
 PROMPT.md

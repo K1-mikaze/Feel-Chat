@@ -13,10 +13,10 @@ This endpoint allows an administrator to delete a user from the system.
 **Parameters:**
 Header: **session-id** : e1e13e1dsfat3t2ge
 
-| Type | Object     | Description     |
-| ---- | ---------- | --------------- |
-| UUID | user_id    | User ID to delete |
-| UUID | delete_id  | ID performing the deletion |
+| Type | Object    | Description                |
+| ---- | --------- | -------------------------- |
+| UUID | user_id   | User ID to delete          |
+| UUID | delete_id | ID performing the deletion |
 
 - Returns 200 if user was deleted successfully
 - Returns 404 if User or Session not found
@@ -33,15 +33,16 @@ This endpoint allows an administrator to update a user's information.
 **Parameters:**
 Header: **session-id** : e1e13e1dsfat3t2ge
 
-| Type   | Object   | Description       |
-| ------ | -------- | ----------------- |
-| UUID   | user_id  | User ID to update |
-| UUID   | id       | New user ID       |
-| String | email    | New email         |
-| String | username | New username      |
-| String | password | New password      |
-| String | city     | New city          |
-| String | country  | New country       |
+| Type    | Object   | Description         |
+| ------- | -------- | ------------------- |
+| UUID    | user_id  | User ID to update   |
+| UUID    | id       | User ID to update   |
+| String  | username | New username        |
+| String  | password | New password        |
+| String  | city     | New city            |
+| String  | country  | New country         |
+| boolean | verifed  | if user is verified |
+| boolean | deleted  | if user is deleted  |
 
 - Returns 200 if user was updated successfully
 - Returns 404 if User or Session not found
@@ -54,14 +55,14 @@ Header: **session-id** : e1e13e1dsfat3t2ge
 This endpoint retrieves all users in the system. Administrator access required.
 
 **Endpoint:** `/users`
-**Type:** GET
+**Type:** POST
 **Parameters:**
 Header: **session-id** : e1e13e1dsfat3t2ge
 
 Query Param: **includeDeleted** : false (default)
 
-| Type | Object  | Description           |
-| ---- | ------- | --------------------- |
+| Type | Object  | Description             |
+| ---- | ------- | ----------------------- |
 | UUID | user_id | Administrator's user ID |
 
 ```javascript

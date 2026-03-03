@@ -44,7 +44,6 @@
 
       # Frontend
       frontend = pkgs.mkShell {
-        buildInputs = with pkgs; [];
         shellHook = ''
           nix develop --refresh github:K1-mikaze/Nix-Environments/main?dir=flakes/language/dart
         '';
@@ -66,21 +65,6 @@
             fi
           '';
         in "${script}/bin/start-backend";
-      };
-
-      frontend = {
-        type = "app";
-        program = let
-          script = pkgs.writeShellScriptBin "start-frontend" ''
-            if [[ $(basename "$PWD") == "frontend" ]]; then
-              ${pkgs.flutter}/bin/flutter config --android-sdk ./android/sdk/
-              ${pkgs.flutter}/bin/flutter run
-            else
-              echo "> You're not in the required folder 'frontend/' "
-              exit
-            fi
-          '';
-        in "${script}/bin/start-frontend";
       };
 
       emulator = {

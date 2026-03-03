@@ -68,11 +68,14 @@ public class AdministratorService {
       return false;
     }
     User existingUser = userOptional.get();
-    existingUser.setEmail(updatedUser.getEmail());
     existingUser.setUsername(updatedUser.getUsername());
-    existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+    if (!updatedUser.getPassword().trim().isEmpty()) {
+      existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+    }
     existingUser.setCity(updatedUser.getCity());
     existingUser.setCountry(updatedUser.getCountry());
+    existingUser.setDeleted(updatedUser.isDeleted());
+    existingUser.setVerified(updatedUser.isVerified());
     userRepository.save(existingUser);
     return true;
   }
@@ -82,8 +85,9 @@ public class AdministratorService {
       return null;
     }
     List<User> users = userRepository.findAll();
+    users = users.stream().filter(user -> !user.getId().equals(userId)).toList();
     if (!includeDeleted) {
-      return users.stream()
+      users = users.stream()
           .filter(user -> !user.isDeleted())
           .toList();
     }

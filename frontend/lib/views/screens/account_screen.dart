@@ -193,6 +193,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Changes applied successfully')),
         );
+        Navigator.pushReplacementNamed(context, AppRoutes.menuScreen);
       }
     } else {
       if (mounted) {
