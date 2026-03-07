@@ -19,6 +19,7 @@ class _AdminScreenState extends State<AdminScreen> {
   String? _sessionId;
   List<dynamic>? _users;
   bool _isLoading = false;
+  bool _includeDeleted = false;
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -38,7 +39,7 @@ class _AdminScreenState extends State<AdminScreen> {
     if (_userId == null || _sessionId == null) return;
     setState(() => _isLoading = true);
     try {
-      final users = await _adminService.getUsers(_sessionId!, _userId!);
+      final users = await _adminService.getUsers(_sessionId!, _userId!, includeDeleted: _includeDeleted);
       if (mounted) {
         setState(() {
           _users = users ?? [];
@@ -83,6 +84,14 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ),
             ),
+          ),
+          SwitchListTile(
+            title: const Text('Include deleted users'),
+            value: _includeDeleted,
+            onChanged: (value) {
+              setState(() => _includeDeleted = value);
+              _loadUsers();
+            },
           ),
           Expanded(
             child: _userId != null && _sessionId != null

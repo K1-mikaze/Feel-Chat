@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/configurations/routes/app_routes.dart';
 import 'package:frontend/data/services/admin_service.dart';
 import 'package:frontend/data/services/secure_storage_service.dart';
 import 'package:frontend/utils/validators/validations.dart';
@@ -103,10 +102,8 @@ class _UpdateUserAdminScreenState extends State<UpdateUserAdminScreen> {
     _usernameController.text = _originalUsername!;
     _selectedCountry = _originalCountry = user['country'];
     _selectedCity = _originalCity = user['city'];
-    _deleted = _originalDeleted =
-        user['deleted'] == true || user['deleted'] == 'true';
-    _verified = _originalVerified =
-        user['verified'] == true || user['verified'] == 'true';
+    _deleted = _originalDeleted = user['deleted'] == true || user['deleted'] == 'true';
+    _verified = _originalVerified = user['verified'] == true || user['verified'] == 'true';
   }
 
   @override
@@ -145,9 +142,7 @@ class _UpdateUserAdminScreenState extends State<UpdateUserAdminScreen> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _applyChanges() async {
@@ -179,8 +174,8 @@ class _UpdateUserAdminScreenState extends State<UpdateUserAdminScreen> {
       'id': widget.user['id'],
       'username': _usernameController.text.trim(),
       'password': _passwordController.text,
-      'city': _selectedCity,
-      'country': _selectedCountry,
+      'city': _selectedCity ?? '',
+      'country': _selectedCountry ?? '',
       'verified': _verified,
       'deleted': _deleted,
     };
@@ -193,7 +188,6 @@ class _UpdateUserAdminScreenState extends State<UpdateUserAdminScreen> {
       if (success) {
         _showMessage('User updated successfully');
         Navigator.pop(context, true);
-        Navigator.pushReplacementNamed(context, AppRoutes.adminScreen);
       } else {
         _showMessage('Failed to update user');
       }
@@ -238,9 +232,7 @@ class _UpdateUserAdminScreenState extends State<UpdateUserAdminScreen> {
                   labelText: 'Confirm Password',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => value != _passwordController.text
-                    ? 'Passwords do not match'
-                    : null,
+                validator: (value) => value != _passwordController.text ? 'Passwords do not match' : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(

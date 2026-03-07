@@ -11,9 +11,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import backend.model.entity.data.userMood;
 
 @Entity
 @Table(name = "users")
@@ -61,6 +64,10 @@ public class User {
   @JsonIgnore
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private Set<Verification> verifications = new HashSet<>();
+
+  @JsonIgnore
+  @ManyToMany(mappedBy = "users")
+  private Set<ChatRoom> chatRooms = new HashSet<>();
 
   public User() {
   }
@@ -199,6 +206,14 @@ public class User {
 
   public void setVerifications(Set<Verification> verifications) {
     this.verifications = verifications;
+  }
+
+  public Set<ChatRoom> getChatRooms() {
+    return chatRooms;
+  }
+
+  public void setChatRooms(Set<ChatRoom> chatRooms) {
+    this.chatRooms = chatRooms;
   }
 
   // return false if any variable of the object is empty

@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,11 +24,9 @@ import tools.jackson.databind.ObjectMapper;
 public class AdministratorController {
 
   private final AdministratorService administratorService;
-  private final PasswordEncoder passwordEncoder;
 
-  public AdministratorController(AdministratorService administratorService, PasswordEncoder passwordEncoder) {
+  public AdministratorController(AdministratorService administratorService) {
     this.administratorService = administratorService;
-    this.passwordEncoder = passwordEncoder;
   }
 
   @DeleteMapping("/users")

@@ -2,13 +2,17 @@ package backend.model.service;
 
 import org.springframework.stereotype.Service;
 
+import backend.model.entity.ChatRoom;
 import backend.model.entity.Session;
 import backend.model.entity.User;
 import backend.model.entity.Verification;
-import backend.model.entity.userMood;
+import backend.model.entity.data.userMood;
+import backend.model.repository.ChatRoomRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -32,14 +36,17 @@ public class UserService {
   private final UserRepository userRepository;
   private final SessionRepository sessionRepository;
   private final VerificationRepository verificationRepository;
+  private final ChatRoomRepository chatRoomRepository;
   private final RestTemplate restTemplate;
 
   public UserService(UserRepository userRepository, SessionRepository sessionRepository,
-      VerificationRepository verificationRepository, PasswordEncoder passwordEncoder) {
+      VerificationRepository verificationRepository, PasswordEncoder passwordEncoder,
+      ChatRoomRepository chatRoomRepository) {
     this.userRepository = userRepository;
     this.sessionRepository = sessionRepository;
     this.verificationRepository = verificationRepository;
     this.passwordEncoder = passwordEncoder;
+    this.chatRoomRepository = chatRoomRepository;
     this.restTemplate = new RestTemplate();
   }
 
@@ -186,6 +193,18 @@ public class UserService {
         String city = user.getCity();
         List<User> users = userRepository.findByCityAndDeletedFalse(city);
         users.removeIf(u -> u.getId().equals(userId));
+
+        List<ChatRoom> chatRooms = chatRoomRepository.findByUsers_Id(userId);
+        Set<UUID> existingChatUserIds = new HashSet<>();
+        for (ChatRoom chatRoom : chatRooms) {
+          for (User u : chatRoom.getUsers()) {
+            if (!u.getId().equals(userId)) {
+              existingChatUserIds.add(u.getId());
+            }
+          }
+        }
+        users.removeIf(u -> existingChatUserIds.contains(u.getId()));
+
         return users;
       }
     }

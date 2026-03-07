@@ -5,9 +5,10 @@ class AdminService {
   final String baseUrl = 'http://10.0.2.2:8080/api/v1/admin';
   final http.Client _client = http.Client();
 
-  Future<List<dynamic>?> getUsers(String sessionId, String userId) async {
+  Future<List<dynamic>?> getUsers(String sessionId, String userId, {bool includeDeleted = false}) async {
+    final queryParams = includeDeleted ? '?includeDeleted=true' : '';
     final response = await _client.post(
-      Uri.parse('$baseUrl/users'),
+      Uri.parse('$baseUrl/users$queryParams'),
       headers: {'Content-Type': 'application/json', 'session-id': sessionId},
       body: jsonEncode({'user_id': userId}),
     );

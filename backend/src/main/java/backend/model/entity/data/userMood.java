@@ -1,4 +1,4 @@
-package backend.model.entity;
+package backend.model.entity.data;
 
 public enum userMood {
   SAD,
